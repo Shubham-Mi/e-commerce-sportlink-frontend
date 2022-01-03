@@ -1,18 +1,71 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <section class="hero is-medium is-dark mb-6">
+      <div class="hero-body has-text-centered">
+        <p class="title mb-6">
+          Welcome to <span id="title_name">SPORT-LINK</span>
+        </p>
+        <p class="subtitle">
+          The best sports store online
+        </p>
+      </div>
+    </section>
+
+    <div class="columns is-multiline">
+      <div class="column is-12">
+        <h2 class="is-size-2 has-text-centered">Latest Products</h2>
+      </div>
+
+      <ProductBox
+        v-for="product in latestProducts"
+        v-bind:key="product.id"
+        v-bind:product="product"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import axios from "axios";
+import ProductBox from "@/components/ProductBox.vue";
 
 export default {
-  name: 'Home',
+  name: "Home",
+  data() {
+    return {
+      latestProducts: [],
+    };
+  },
   components: {
-    HelloWorld
-  }
-}
+    ProductBox,
+  },
+  mounted() {
+    this.getLatestProducts();
+    document.title = "Home | Sport-Link";
+  },
+  methods: {
+    async getLatestProducts() {
+      this.$store.commit("setIsLoading", true);
+      await axios
+        .get("/api/v1/latest-products/")
+        .then((response) => {
+          this.latestProducts = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      this.$store.commit("setIsLoading", false);
+    },
+  },
+};
 </script>
+
+<style scoped>
+@font-face {
+  font-family: "Tesla";
+  src: url("Fonts/TESLA.ttf");
+}
+#title_name {
+  font-family: "Tesla";
+}
+</style>
